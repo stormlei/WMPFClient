@@ -1,0 +1,98 @@
+apply plugin: 'com.android.application'
+
+apply plugin: 'kotlin-android'
+
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "com.qpsoft.wmpfclient"
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        release {
+            storeFile file('../wmpf.jks')
+            storePassword '123456'
+            keyAlias 'wmpf'
+            keyPassword '123456'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+        debug {
+            signingConfig signingConfigs.release
+        }
+    }
+
+    //必须要保证所有的flavor 都属于同一个维度
+    flavorDimensions "default"
+
+    //添加如下标签即可分渠道打包
+    productFlavors {
+        govdemo {
+            buildConfigField("String", "APP_ID", "\"wx2b1766bca6959dfa\"")
+            applicationIdSuffix ".govdemo"//这里是在 applicationId 中添加了一个后缀
+            manifestPlaceholders = [app_icon          : "@mipmap/ic_launcher",
+                                    app_name          : "轻派筛查"]
+        }
+
+        jinshi {
+            buildConfigField("String", "APP_ID", "\"wx195761f9ae0f05a4\"")
+            applicationIdSuffix ".jinshi"//这里是在 applicationId 中添加了一个后缀
+            manifestPlaceholders = [app_icon          : "@drawable/ic_jinshi",
+                                    app_name          : "学生近视筛查"]
+        }
+
+        qiantang {
+            buildConfigField("String", "APP_ID", "\"wxbfaed8ae21154858\"")
+            applicationIdSuffix ".qiantang"//这里是在 applicationId 中添加了一个后缀
+            manifestPlaceholders = [app_icon          : "@drawable/ic_qiantang",
+                                    app_name          : "钱塘学生体质监测"]
+        }
+
+        anhuiah {
+            buildConfigField("String", "APP_ID", "\"wx6278568d411b9a5d\"")
+            applicationIdSuffix ".anhuiah"//这里是在 applicationId 中添加了一个后缀
+            manifestPlaceholders = [app_icon          : "@drawable/ic_ah",
+                                    app_name          : "ah儿童视力检查"]
+        }
+
+        tizhi {
+            buildConfigField("String", "APP_ID", "\"wxe0c2142d3a0c86be\"")
+            applicationIdSuffix ".tizhi"//这里是在 applicationId 中添加了一个后缀
+            manifestPlaceholders = [app_icon          : "@drawable/ic_tizhi",
+                                    app_name          : "学生体质监测"]
+        }
+
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support.constraint:constraint-layout:2.0.1'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+    implementation 'com.android.support:multidex:1.0.3'
+    implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
+    implementation 'com.blankj:utilcode:1.22.9'
+    implementation 'com.lzy.net:okgo:3.0.1'
+    implementation 'com.tencent:mmkv-static:1.0.24'
+    implementation 'com.alibaba:fastjson:1.1.57.android'
+    api 'io.reactivex.rxjava2:rxandroid:2.0.2'
+    api 'io.reactivex.rxjava2:rxjava:2.1.16'
+}
