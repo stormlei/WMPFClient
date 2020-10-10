@@ -74,6 +74,18 @@ android {
             manifestPlaceholders = [app_icon          : "@drawable/ic_tizhi",
                                     app_name          : "学生体质监测"]
         }
+        yanjiankang {
+            buildConfigField("String", "APP_ID", "\"wx8ae2ebdf85b0812e\"")
+            applicationIdSuffix ".yanjiankang"//这里是在 applicationId 中添加了一个后缀
+            manifestPlaceholders = [app_icon          : "@drawable/ic_yanjiankang",
+                                    app_name          : "眼健康检查"]
+        }
+        shili {
+            buildConfigField("String", "APP_ID", "\"wx8f66fdec0726dbc0\"")
+            applicationIdSuffix ".shili"//这里是在 applicationId 中添加了一个后缀
+            manifestPlaceholders = [app_icon          : "@drawable/ic_shili",
+                                    app_name          : "学生视力筛查"]
+        }
 
     }
 }
