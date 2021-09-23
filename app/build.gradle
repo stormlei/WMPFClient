@@ -9,7 +9,7 @@ android {
     defaultConfig {
         applicationId "com.qpsoft.wmpfclient"
         minSdkVersion 21
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -86,6 +86,30 @@ android {
             manifestPlaceholders = [app_icon          : "@drawable/ic_shili",
                                     app_name          : "学生视力筛查"]
         }
+        linmu {
+            buildConfigField("String", "APP_ID", "\"wx39343b25dffb333a\"")
+            applicationIdSuffix ".linmu"//这里是在 applicationId 中添加了一个后缀
+            manifestPlaceholders = [app_icon          : "@drawable/ic_linmu",
+                                    app_name          : "琳目眼科"]
+        }
+        chagnjianbing {
+            buildConfigField("String", "APP_ID", "\"wx93dde36e1f46f240\"")
+            applicationIdSuffix ".changjianbing"//这里是在 applicationId 中添加了一个后缀
+            manifestPlaceholders = [app_icon          : "@mipmap/ic_launcher",
+                                    app_name          : "常见病监测"]
+        }
+        wmpf {
+            buildConfigField("String", "APP_ID", "\"wx8f66fdec0726dbc0\"")
+            applicationIdSuffix ".wmpf"//这里是在 applicationId 中添加了一个后缀
+            manifestPlaceholders = [app_icon          : "@mipmap/ic_launcher",
+                                    app_name          : "wmpf"]
+        }
+        shijue {
+            buildConfigField("String", "APP_ID", "\"wx425b1018f44b9058\"")
+            applicationIdSuffix ".shijue"//这里是在 applicationId 中添加了一个后缀
+            manifestPlaceholders = [app_icon          : "@drawable/ic_shijue",
+                                    app_name          : "学生视觉监测"]
+        }
 
     }
 }
@@ -105,6 +129,6 @@ dependencies {
     implementation 'com.lzy.net:okgo:3.0.1'
     implementation 'com.tencent:mmkv-static:1.0.24'
     implementation 'com.alibaba:fastjson:1.1.57.android'
-    api 'io.reactivex.rxjava2:rxandroid:2.0.2'
-    api 'io.reactivex.rxjava2:rxjava:2.1.16'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.16'
 }

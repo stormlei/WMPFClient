@@ -45,7 +45,7 @@ class FastExperienceActivity : AppCompatActivity() {
         val file: File? = this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
         val destFilePath = file?.absolutePath + File.separator + "wmpf_service.apk"
         if (!FileUtils.isFileExists(destFilePath)) {
-            val success = ResourceUtils.copyFileFromAssets("wmpfservice/wmpf-arm-production-release-v7.0.10.51-411.apk", destFilePath)
+            val success = ResourceUtils.copyFileFromAssets("wmpfservice/wmpf-arm-production-release-v1.0.5-640.apk", destFilePath)
             LogUtils.e("-------$success")
         }
         AppUtils.installApp(destFilePath)
