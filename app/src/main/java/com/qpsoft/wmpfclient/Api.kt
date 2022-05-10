@@ -1,18 +1,66 @@
 package com.qpsoft.wmpfclient
 
+import android.app.Application
 import android.util.Log
-import com.blankj.utilcode.util.LogUtils
 import com.tencent.mm.ipcinvoker.IPCInvokeCallbackEx
-import com.tencent.wmpf.cli.task.*
+import com.tencent.wmpf.app.WMPFBoot
+import com.tencent.wmpf.cli.task.IPCInvokerTask_ActivateDevice
+import com.tencent.wmpf.cli.task.IPCInvokerTask_LaunchWxaApp
+import com.tencent.wmpf.cli.task.TaskError
 import com.tencent.wmpf.cli.task.pb.WMPFBaseRequestHelper
 import com.tencent.wmpf.cli.task.pb.WMPFIPCInvoker
-import com.tencent.wmpf.proto.*
+import com.tencent.wmpf.cli.task.pb.proto.WMPFResponse
+import com.tencent.wmpf.proto.WMPFActivateDeviceRequest
+import com.tencent.wmpf.proto.WMPFActivateDeviceResponse
+import com.tencent.wmpf.proto.WMPFLaunchWxaAppRequest
+import com.tencent.wmpf.proto.WMPFLaunchWxaAppResponse
 import io.reactivex.Single
 import java.lang.Exception
 
 object Api {
 
     private const val TAG = "Demo.Api"
+
+    private fun isSuccess(response: WMPFResponse): Boolean {
+        return response != null && response.baseResponse.errCode == TaskError.ErrType_OK
+    }
+
+    fun init(context: Application) {
+        WMPFBoot.init(context)
+        val invokeToken = getInvokeToken()
+        WMPFIPCInvoker.initInvokeToken(invokeToken)
+    }
+
+    private fun getInvokeToken(): String {
+        if (WMPFBoot.getAppContext() == null) {
+            throw java.lang.Exception("need invoke Api.Init")
+        }
+        val pref = WMPFBoot.getAppContext()!!.getSharedPreferences("InvokeTokenHelper", 0)
+        return pref?.getString(TAG, "")!!
+    }
+
+    private fun initInvokeToken(invokeToken: String) {
+        if (WMPFBoot.getAppContext() == null) {
+            throw java.lang.Exception("need invoke Api.Init")
+        }
+        val pref = WMPFBoot.getAppContext()!!.getSharedPreferences("InvokeTokenHelper", 0)
+        val editor = pref?.edit()
+        editor?.putString(TAG, invokeToken)?.apply()
+        WMPFIPCInvoker.initInvokeToken(invokeToken)
+    }
+
+    private fun createTaskError(response: WMPFResponse?): TaskError {
+        if (response == null) {
+            return TaskError(TaskError.ErrType_NORMAL, -1, "response is null")
+        }
+        return TaskError(response.baseResponse.errType, response.baseResponse.errCode, response.baseResponse.errMsg)
+    }
+
+    class TaskErrorException(val taskError: TaskError): java.lang.Exception() {
+        override fun toString(): String {
+            return "TaskErrorException(taskError=$taskError)"
+        }
+    }
 
     fun activateDevice(productId: Int, keyVerion: Int,
                        deviceId: String, signature: String, hostAppId: String): Single<WMPFActivateDeviceResponse> {
@@ -36,7 +84,23 @@ object Api {
                         }
 
                         override fun onCallback(response: WMPFActivateDeviceResponse) {
-                            it.onSuccess(response)
+                            if (isSuccess(response)) {
+                                if (response != null && !response.invokeToken.isNullOrEmpty()) {
+                                    initInvokeToken(response.invokeToken)
+                                }
+
+                                it.onSuccess(response)
+                            } else {
+                                it.onError(TaskErrorException(createTaskError(response)))
+                            }
+                        }
+
+                        override fun onCaughtInvokeException(exception: java.lang.Exception?) {
+                            if (exception != null) {
+                                it.onError(exception)
+                            } else {
+                                it.onError(java.lang.Exception("null"))
+                            }
                         }
                     })
 

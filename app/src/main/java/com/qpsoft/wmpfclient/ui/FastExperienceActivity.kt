@@ -18,7 +18,6 @@ import com.lzy.okgo.model.Response
 import com.qpsoft.wmpfclient.Api
 import com.qpsoft.wmpfclient.BuildConfig
 import com.qpsoft.wmpfclient.R
-import com.qpsoft.wmpfclient.utils.InvokeTokenHelper
 import java.io.File
 
 
@@ -27,6 +26,10 @@ class FastExperienceActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_fast_experience)
+
+        if (!checkPermission(this)) {
+            requestPermission(this)
+        }
 
         ToastUtils.showShort("正在加载运行环境，请稍后...")
     }
@@ -45,7 +48,7 @@ class FastExperienceActivity : AppCompatActivity() {
         val file: File? = this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
         val destFilePath = file?.absolutePath + File.separator + "wmpf_service.apk"
         if (!FileUtils.isFileExists(destFilePath)) {
-            val success = ResourceUtils.copyFileFromAssets("wmpfservice/wmpf-arm-production-release-v1.0.5-640.apk", destFilePath)
+            val success = ResourceUtils.copyFileFromAssets("wmpfservice/wmpf-arm-production-release-v1.1.0-652-signed.apk", destFilePath)
             LogUtils.e("-------$success")
         }
         AppUtils.installApp(destFilePath)
@@ -77,13 +80,21 @@ class FastExperienceActivity : AppCompatActivity() {
     private fun launchWxa(productId: Int, keyVersion: Int,
                           deviceId: String, signature: String, hostAppId: String) {
         Api.activateDevice(productId, keyVersion, deviceId, signature, hostAppId)
-            .flatMap {
-                InvokeTokenHelper.initInvokeToken(this, it.invokeToken)
-                Api.launchWxaApp(optLaunchAppId(), "")
-            }
             .subscribe({
                 Log.e(TAG, "success: $it")
-                finish()
+                if (it.invokeToken == null) {
+                    LogUtils.e("activate device fail for a null token, may ticket is expired")
+                } else {
+                    val invokeToken = it.invokeToken
+                    LogUtils.e("-------$invokeToken")
+                    Api.launchWxaApp(optLaunchAppId(), "").subscribe({
+                        Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
+                        finish()
+                    }, {
+                        ToastUtils.showShort("error: $it")
+                        Log.e(TAG, "error: $it")
+                    })
+                }
             }, {
                 Log.e(TAG, "error: $it")
             })
