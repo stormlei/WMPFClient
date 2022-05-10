@@ -9,7 +9,7 @@ android {
     defaultConfig {
         applicationId "com.qpsoft.wmpfclient"
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -85,6 +85,12 @@ android {
             applicationIdSuffix ".shili"//这里是在 applicationId 中添加了一个后缀
             manifestPlaceholders = [app_icon          : "@drawable/ic_shili",
                                     app_name          : "学生视力筛查"]
+        }
+        tbdemo {
+            buildConfigField("String", "APP_ID", "\"wx93dde36e1f46f240\"")
+            applicationIdSuffix ".shili"//这里是在 applicationId 中添加了一个后缀
+            manifestPlaceholders = [app_icon          : "@drawable/ic_shili",
+                                    app_name          : "学生常见病监测"]
         }
         linmu {
             buildConfigField("String", "APP_ID", "\"wx39343b25dffb333a\"")
